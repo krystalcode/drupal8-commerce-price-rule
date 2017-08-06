@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * Defines functionality for the Commerce Price Rule module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function commerce_price_rule_theme() {
+  return [
+    'commerce_price_rule_form' => [
+      'render element' => 'form',
+    ],
+  ];
+}
