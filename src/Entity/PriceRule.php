@@ -5,6 +5,7 @@ namespace Drupal\commerce_price_rule\Entity;
 use Drupal\commerce\ConditionGroup;
 use Drupal\commerce\Context;
 use Drupal\commerce\PurchasableEntityInterface;
+use Drupal\user\Entity\User;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -271,6 +272,30 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
     if (!empty($product_variation_conditions)) {
       $product_variation_conditions = new ConditionGroup($product_variation_conditions, 'AND');
       if (!$product_variation_conditions->evaluate($entity)) {
+        return FALSE;
+      }
+    }
+
+    // User conditions.
+    $user_conditions = array_filter($conditions, function ($condition) {
+      /** @var \Drupal\commerce\Plugin\Commerce\Condition\ConditionInterface $condition */
+      return $condition->getEntityTypeId() == 'user';
+    });
+    if (!empty($user_conditions)) {
+      // We need to pass a user entity to the conditions, not the AccountProxy
+      // object that is stored in the context.
+      $customer_id = $context->getCustomer()->id();
+      if ($customer_id) {
+        $customer = $this->entityManager()
+          ->getStorage('user')
+          ->load($customer_id);
+      }
+      else {
+        $customer = User::getAnonymousUser();
+      }
+
+      $user_conditions = new ConditionGroup($user_conditions, 'AND');
+      if (!$user_conditions->evaluate($customer)) {
         return FALSE;
       }
     }
