@@ -75,7 +75,7 @@ class FixedAmountOff extends PriceRuleCalculationBase {
   /**
    * {@inheritdoc}
    */
-  public function calculate(EntityInterface $entity, PriceRuleInterface $promotion) {
+  public function calculate(EntityInterface $entity, PriceRuleInterface $price_rule) {
     $this->assertEntity($entity);
     $original_price = $entity->getPrice();
     $original_currency_code = $original_price->getCurrencyCode();
