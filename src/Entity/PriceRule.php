@@ -134,6 +134,15 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
   /**
    * {@inheritdoc}
    */
+  public function getCalculation() {
+    if (!$this->get('calculation')->isEmpty()) {
+      return $this->get('calculation')->first()->getTargetInstance();
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getConditions() {
     $conditions = [];
     foreach ($this->get('conditions') as $field_item) {
@@ -311,6 +320,10 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
     $quantity,
     Context $context
   ) {
+    $calculation = $this->getCalculation();
+    if ($calculation->getEntityTypeId() === 'commerce_product_variation') {
+      return $calculation->calculate($entity, $this);
+    }
   }
 
   /**
@@ -361,6 +374,15 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
       ->setDisplayOptions('form', [
         'type' => 'commerce_entity_select',
         'weight' => 2,
+      ]);
+
+    $fields['calculation'] = BaseFieldDefinition::create('commerce_plugin_item:commerce_price_rule_calculation')
+      ->setLabel(t('Calculation'))
+      ->setCardinality(1)
+      ->setRequired(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'commerce_plugin_radios',
+        'weight' => 3,
       ]);
 
     $fields['conditions'] = BaseFieldDefinition::create('commerce_plugin_item:commerce_condition')

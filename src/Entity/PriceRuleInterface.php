@@ -50,6 +50,14 @@ interface PriceRuleInterface extends ContentEntityInterface, EntityStoresInterfa
   public function setDescription($description);
 
   /**
+   * Gets the calculation.
+   *
+   * @return \Drupal\commerce_price_rule\Plugin\Commerce\PriceRuleCalculation\PriceRuleCalculationInterface|null
+   *   The calculation, or NULL if not yet available.
+   */
+  public function getCalculation();
+
+  /**
    * Gets the conditions.
    *
    * @return \Drupal\commerce\Plugin\Commerce\Condition\ConditionInterface[]
