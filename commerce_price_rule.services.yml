@@ -7,3 +7,9 @@ services:
     class: Drupal\commerce_price_rule\EventSubscriber\ReferenceablePluginTypesSubscriber
     tags:
       - { name: event_subscriber }
+
+  commerce_price_rule.price_resolver:
+    class: Drupal\commerce_price_rule\Resolver\PriceResolver
+    arguments: ['@entity.manager']
+    tags:
+      - { name: commerce_price.price_resolver, priority: 0 }
