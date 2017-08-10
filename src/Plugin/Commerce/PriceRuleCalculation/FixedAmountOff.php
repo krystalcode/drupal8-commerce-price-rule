@@ -75,6 +75,16 @@ class FixedAmountOff extends PriceRuleCalculationBase {
   /**
    * {@inheritdoc}
    */
+  public function getLabel() {
+    return $this->t(
+      '@amount off the product price',
+      ['@amount' => $this->getAmount()]
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function calculate(EntityInterface $entity, PriceRuleInterface $price_rule) {
     $this->assertEntity($entity);
     $original_price = $entity->getPrice();

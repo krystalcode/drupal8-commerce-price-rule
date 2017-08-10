@@ -24,6 +24,17 @@ interface PriceRuleCalculationInterface extends ConfigurablePluginInterface, Plu
   public function getEntityTypeId();
 
   /**
+   * Gets an explanatory label for the calculation.
+   *
+   * For example, a calculation that calculates the price as a percentage off
+   * the base product price could return a label "20% off the product price".
+   *
+   * @return string
+   *   The label.
+   */
+  public function getLabel();
+
+  /**
    * Applies the calculation to the given entity.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity

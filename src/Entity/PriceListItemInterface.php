@@ -10,20 +10,20 @@ use Drupal\Core\Entity\ContentEntityInterface;
 interface PriceListItemInterface extends ContentEntityInterface {
 
   /**
-   * Gets the parent price rule.
+   * Gets the parent price list.
    *
-   * @return PriceRuleInterface
-   *   The price rule entity.
+   * @return PriceListInterface
+   *   The price list entity.
    */
-  public function getPriceRule();
+  public function getPriceList();
 
   /**
-   * Gets the parent price rule ID.
+   * Gets the parent price list ID.
    *
    * @return int
-   *   The price rule ID.
+   *   The price list ID.
    */
-  public function getPriceRuleId();
+  public function getPriceListId();
 
   /**
    * Get the price list item's product variation.

@@ -40,7 +40,6 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     },
  *     "route_provider" = {
  *       "default" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
- *       "delete-multiple" = "Drupal\entity\Routing\DeleteMultipleRouteProvider",
  *     },
  *     "translation" = "Drupal\content_translation\ContentTranslationHandler"
  *   },
@@ -60,7 +59,6 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "add-form" = "/price-rule/add",
  *     "edit-form" = "/price-rule/{commerce_price_rule}/edit",
  *     "delete-form" = "/price-rule/{commerce_price_rule}/delete",
- *     "delete-multiple-form" = "/admin/commerce/price-rules/delete",
  *     "collection" = "/admin/commerce/price-rules",
  *   },
  * )

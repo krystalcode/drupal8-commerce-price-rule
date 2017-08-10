@@ -19,12 +19,31 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     singular = "@count price list item",
  *     plural = "@count price list items",
  *   ),
+ *   handlers = {
+ *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
+ *     "views_data" = "Drupal\views\EntityViewsData",
+ *     "form" = {
+ *       "default" = "Drupal\commerce_price_rule\Form\PriceListItemForm",
+ *       "add" = "Drupal\commerce_price_rule\Form\PriceListItemForm",
+ *       "edit" = "Drupal\commerce_price_rule\Form\PriceListItemForm",
+ *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm"
+ *     },
+ *     "route_provider" = {
+ *       "default" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
+ *     },
+ *   },
  *   base_table = "commerce_price_rule_list_item",
+ *   admin_permission = "administer commerce_price_rule",
  *   entity_keys = {
- *     "id" = "id",
- *     "label" = "name",
+ *     "id" = "price_list_item_id",
  *     "uuid" = "uuid",
  *     "status" = "status",
+ *   },
+ *   links = {
+ *     "add-form" = "/admin/commerce/price-rules/price-lists/{commerce_price_rule_list}/items/add",
+ *     "edit-form" = "/admin/commerce/price-rules/price-lists/items/{commerce_price_rule_list_item}/edit",
+ *     "delete-form" = "/admin/commerce/price-rules/price-lists/items/{commerce_price_rule_list_item}/delete",
  *   },
  * )
  */
@@ -33,15 +52,15 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
   /**
    * {@inheritdoc}
    */
-  public function getPriceRule() {
-    return $this->get('price_rule_id')->entity;
+  public function getPriceList() {
+    return $this->get('price_list_id')->entity;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getPriceRuleId() {
-    return $this->get('price_rule_id')->target_id;
+  public function getPriceListId() {
+    return $this->get('price_list_id')->target_id;
   }
 
   /**
@@ -94,12 +113,21 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
-    $fields['price_rule_id'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Price rule'))
-      ->setDescription(t('The parent price rule.'))
-      ->setSetting('target_type', 'commerce_price_rule')
+    $fields['price_list_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Price list'))
+      ->setDescription(t('The parent price list.'))
+      ->setSetting('target_type', 'commerce_price_rule_list')
       ->setRequired(TRUE)
-      ->setReadOnly(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => -1,
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'placeholder' => '',
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['product_variation_id'] = BaseFieldDefinition::create('entity_reference')

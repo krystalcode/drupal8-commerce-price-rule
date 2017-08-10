@@ -5,7 +5,9 @@ namespace Drupal\commerce_price_rule\Plugin\Commerce\PriceRuleCalculation;
 use Drupal\commerce_price\Price;
 use Drupal\commerce_price\RounderInterface;
 use Drupal\commerce_price_rule\Entity\PriceRuleInterface;
+use Drupal\Core\Database\Connection as DatabaseConnection;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -19,6 +21,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class PriceList extends PriceRuleCalculationBase {
+
+  /**
+   * The entity manager
+   *
+   * @var \Drupal\Core\Entity\EntityManagerInterface
+   */
+  protected $entity_manager;
 
   /**
    * The database connection.
@@ -38,6 +47,8 @@ class PriceList extends PriceRuleCalculationBase {
    *   The plugin implementation definition.
    * @param \Drupal\commerce_price\RounderInterface $rounder
    *   The rounder.
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   *   The entity manager.
    * @param \Drupal\Core\Database\Connection $database_connection
    *   The database connection.
    */
@@ -46,7 +57,8 @@ class PriceList extends PriceRuleCalculationBase {
     $plugin_id,
     $plugin_definition,
     RounderInterface $rounder,
-    $database_connection
+    EntityManagerInterface $entity_manager,
+    DatabaseConnection $database_connection
   ) {
     parent::__construct(
       $configuration,
@@ -55,6 +67,7 @@ class PriceList extends PriceRuleCalculationBase {
       $rounder
     );
 
+    $this->entity_manager = $entity_manager;
     $this->database_connection = $database_connection;
   }
 
@@ -72,7 +85,78 @@ class PriceList extends PriceRuleCalculationBase {
       $plugin_id,
       $plugin_definition,
       $container->get('commerce_price.rounder'),
+      $container->get('entity.manager'),
       $container->get('database')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function defaultConfiguration() {
+    return [
+      'price_list_id' => NULL,
+    ] + parent::defaultConfiguration();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $form += parent::buildConfigurationForm($form, $form_state);
+
+    $price_list = $this->configuration['price_list_id'];
+    if ($price_list) {
+      $price_list = $this->entity_manager
+        ->getStorage('commerce_price_rule_list')
+        ->load($price_list);
+    }
+
+    $form['price_list'] = [
+      '#type' => 'entity_autocomplete',
+      '#title' => $this->t('Price list'),
+      '#description' => $this->t('The list to get the prices from. If no list is provided when creating a new price rule, a list with the same name as the rule will be created and associated with it for convenience.'),
+      '#default_value' => $price_list,
+      '#target_type' => 'commerce_price_rule_list',
+      '#required' => TRUE,
+    ];
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    parent::submitConfigurationForm($form, $form_state);
+
+    $values = $form_state->getValue($form['#parents']);
+    $this->configuration['price_list_id'] = $values['price_list'];
+  }
+
+  /**
+   * Gets the price list associated with the calculation.
+   *
+   * @return \Drupal\commerce_price_rule\Entity\PriceListInterface
+   *   The calculation's price list.
+   */
+  public function getList() {
+    if (!$this->configuration['price_list_id']) {
+      return;
+    }
+
+    return $this->entity_manager
+      ->getStorage('commerce_price_rule_list')
+      ->load($this->configuration['price_list_id']);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getLabel() {
+    return $this->t(
+      '"@price_list_label" price list',
+      ['@price_list_label' => $this->getList()->getName()]
     );
   }
 
@@ -85,12 +169,19 @@ class PriceList extends PriceRuleCalculationBase {
   ) {
     $this->assertEntity($entity);
 
+    // We should always have a price list associated with the calculation, but
+    // let's not break every page on the website where a product price is
+    // calculated if there is an error like a form validation error.
+    if ((empty($this->configuration['price_list_id']))) {
+      return;
+    }
+
     // Performance is important here, load only the required fields directly
     // from the database.
     $result = $this->database_connection
       ->select('commerce_price_rule_list_item', 'li')
       ->fields('li', ['price__number', 'price__currency_code'])
-      ->condition('li.price_rule_id', $price_rule->id())
+      ->condition('li.price_list_id', $this->configuration['price_list_id'])
       ->condition('li.product_variation_id', $entity->id())
       ->condition('li.status', 1)
       ->range(0, 1)

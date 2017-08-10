@@ -95,8 +95,11 @@ class PriceRuleListBuilder extends EntityListBuilder implements FormInterface {
    */
   public function buildHeader() {
     $header['name'] = $this->t('Name');
+    $header['calculation'] = $this->t('Calculation Method');
+    $header['stores'] = $this->t('Stores');
     $header['start_date'] = $this->t('Start date');
     $header['end_date'] = $this->t('End date');
+    $header['enabled'] = $this->t('Enabled');
     if ($this->hasTableDrag) {
       $header['weight'] = $this->t('Weight');
     }
@@ -111,11 +114,26 @@ class PriceRuleListBuilder extends EntityListBuilder implements FormInterface {
     $row['#attributes']['class'][] = 'draggable';
     $row['#weight'] = $entity->getWeight();
     $row['name'] = $entity->label();
-    if (!$entity->isEnabled()) {
-      $row['name'] .= ' (' . $this->t('Disabled') . ')';
+    $row['calculation'] = $entity->getCalculation()->getLabel();
+
+    // Stores - let's display up to 10 store names.
+    $stores = $entity->getStores();
+    $store_names = [];
+    if (count($stores) > 10) {
+      $store_names = $this->t('More than 10 stores.');
     }
+    else {
+      $store_names = array_map(function($store) {
+        return $store->getName();
+      }, $stores);
+    }
+    $row['stores'] = implode(', ', $store_names);
+
     $row['start_date'] = $entity->getStartDate()->format('M jS Y');
     $row['end_date'] = $entity->getEndDate() ? $entity->getEndDate()->format('M jS Y') : '—';
+
+    $row['enabled'] = $entity->isEnabled() ? $this->t('Yes') : $this->t('No');
+
     if ($this->hasTableDrag) {
       $row['weight'] = [
         '#type' => 'weight',
@@ -167,8 +185,11 @@ class PriceRuleListBuilder extends EntityListBuilder implements FormInterface {
     foreach ($this->entities as $entity) {
       $row = $this->buildRow($entity);
       $row['name'] = ['#markup' => $row['name']];
+      $row['calculation'] = ['#markup' => $row['calculation']];
+      $row['stores'] = ['#markup' => $row['stores']];
       $row['start_date'] = ['#markup' => $row['start_date']];
       $row['end_date'] = ['#markup' => $row['end_date']];
+      $row['enabled'] = ['#markup' => $row['enabled']];
       if (isset($row['weight'])) {
         $row['weight']['#delta'] = $delta;
       }

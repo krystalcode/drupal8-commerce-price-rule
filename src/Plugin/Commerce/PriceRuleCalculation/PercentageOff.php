@@ -80,6 +80,16 @@ class PercentageOff extends PriceRuleCalculationBase {
   /**
    * {@inheritdoc}
    */
+  public function getLabel() {
+    return $this->t(
+      '@amount% off the product price',
+      ['@amount' => $this->getAmount() * 100]
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function calculate(EntityInterface $entity, PriceRuleInterface $price_rule) {
     $this->assertEntity($entity);
     $adjusted_price = $entity->getPrice()->multiply((string) (1 - $this->getAmount()));

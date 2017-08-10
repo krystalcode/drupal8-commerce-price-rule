@@ -1,9 +1,4 @@
 entity.commerce_price_rule.collection:
   route_name: entity.commerce_price_rule.collection
   base_route: entity.commerce_price_rule.collection
-  title: List
-
-entity.commerce_price_rule.edit_form:
-  route_name: entity.commerce_price_rule.edit_form
-  base_route: entity.commerce_price_rule.edit_form
-  title: Edit
+  title: Price Rules
