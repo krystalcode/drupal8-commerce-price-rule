@@ -46,7 +46,6 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   base_table = "commerce_price_rule",
  *   data_table = "commerce_price_rule_field_data",
  *   admin_permission = "administer commerce_price_rule",
- *   fieldable = TRUE,
  *   translatable = TRUE,
  *   entity_keys = {
  *     "id" = "price_rule_id",
