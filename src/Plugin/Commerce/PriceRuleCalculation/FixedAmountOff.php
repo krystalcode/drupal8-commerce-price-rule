@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_price_rule\Plugin\Commerce\PriceRuleCalculation;
 
+use Drupal\commerce\Context;
 use Drupal\commerce_price\Price;
 use Drupal\commerce_price_rule\Entity\PriceRuleInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -85,7 +86,12 @@ class FixedAmountOff extends PriceRuleCalculationBase {
   /**
    * {@inheritdoc}
    */
-  public function calculate(EntityInterface $entity, PriceRuleInterface $price_rule) {
+  public function calculate(
+    EntityInterface $entity,
+    PriceRuleInterface $price_rule,
+    $quantity,
+    Context $context
+  ) {
     $this->assertEntity($entity);
     $original_price = $entity->getPrice();
     $original_currency_code = $original_price->getCurrencyCode();

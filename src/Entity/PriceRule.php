@@ -319,7 +319,7 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
   ) {
     $calculation = $this->getCalculation();
     if ($calculation->getEntityTypeId() === 'commerce_product_variation') {
-      return $calculation->calculate($entity, $this);
+      return $calculation->calculate($entity, $this, $quantity, $context);
     }
   }
 

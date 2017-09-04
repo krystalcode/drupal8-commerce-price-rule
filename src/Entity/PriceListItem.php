@@ -95,6 +95,36 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
   /**
    * {@inheritdoc}
    */
+  public function getMinimumQuantity() {
+    $this->get('min_quantity')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setMinimumQuantity($quantity) {
+    $this->set('min_quantity', (string) $quantity);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMaximumQuantity() {
+    $this->get('max_quantity')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setMaximumQuantity($quantity) {
+    $this->set('max_quantity', (string) $quantity);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isEnabled() {
     return (bool) $this->getEntityKey('status');
   }
@@ -160,6 +190,32 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
         'weight' => 0,
       ])
       ->setRequired(TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['min_quantity'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Minimum Quantity'))
+      ->setDescription(t('The minimum number of purchased units that the price will apply to.'))
+      ->setSetting('unsigned', TRUE)
+      ->setSetting('min', 1)
+      ->setDefaultValue(1)
+      ->setDisplayOptions('form', [
+        'type' => 'commerce_quantity',
+        'weight' => 1,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['max_quantity'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Maximum Quantity'))
+      ->setDescription(t('The maximum number of purchased units that the price will apply to.'))
+      ->setSetting('unsigned', TRUE)
+      ->setSetting('min', 1)
+      ->setDefaultValue(1)
+      ->setDisplayOptions('form', [
+        'type' => 'commerce_quantity',
+        'weight' => 1,
+      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 

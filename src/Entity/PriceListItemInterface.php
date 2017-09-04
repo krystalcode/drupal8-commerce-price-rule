@@ -60,6 +60,42 @@ interface PriceListItemInterface extends ContentEntityInterface {
   public function setPrice(Price $price);
 
   /**
+   * Gets the minimum quantity that the price list item applies to.
+   *
+   * @return string
+   *   The price list item's minimum quantity
+   */
+  public function getMinimumQuantity();
+
+  /**
+   * Gets the minimum quantity that the price list item applies to.
+   *
+   * @param string $quantity
+   *   The price list item's minimum quantity.
+   *
+   * @return $this
+   */
+  public function setMinimumQuantity($quantity);
+
+  /**
+   * Gets the maximum quantity that the price list item applies to.
+   *
+   * @return string
+   *   The price list item's maximum quantity
+   */
+  public function getMaximumQuantity();
+
+  /**
+   * Gets the maximum quantity that the price list item applies to.
+   *
+   * @param string $quantity
+   *   The price list item's maximum quantity.
+   *
+   * @return $this
+   */
+  public function setMaximumQuantity($quantity);
+
+  /**
    * Get whether the price list item is enabled.
    *
    * @return bool

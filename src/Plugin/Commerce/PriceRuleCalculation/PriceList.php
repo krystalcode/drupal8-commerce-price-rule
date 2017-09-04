@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_price_rule\Plugin\Commerce\PriceRuleCalculation;
 
+use Drupal\commerce\Context;
 use Drupal\commerce_price\Price;
 use Drupal\commerce_price\RounderInterface;
 use Drupal\commerce_price_rule\Entity\PriceRuleInterface;
@@ -165,7 +166,9 @@ class PriceList extends PriceRuleCalculationBase {
    */
   public function calculate(
     EntityInterface $entity,
-    PriceRuleInterface $price_rule
+    PriceRuleInterface $price_rule,
+    $quantity,
+    Context $context
   ) {
     $this->assertEntity($entity);
 
@@ -178,13 +181,32 @@ class PriceList extends PriceRuleCalculationBase {
 
     // Performance is important here, load only the required fields directly
     // from the database.
-    $result = $this->database_connection
+    $query = $this->database_connection
       ->select('commerce_price_rule_list_item', 'li')
       ->fields('li', ['price__number', 'price__currency_code'])
       ->condition('li.price_list_id', $this->configuration['price_list_id'])
       ->condition('li.product_variation_id', $entity->id())
       ->condition('li.status', 1)
-      ->range(0, 1)
+      ->range(0, 1);
+
+    // The quantity must be matching the minimum and maximum quantites of the
+    // list item i.e. it should either be both higher or equal than the minimum
+    // and lower or equal than the maximum. When no maximum is defied, which
+    // should happen at the last list item for a product varation (e.g. price X
+    // for more than Y number of items), the quantity only needs to be higher
+    // than the minimum.
+    $quantity_max_defined = $query->andConditionGroup()
+      ->condition('min_quantity', $quantity, '<=')
+      ->condition('max_quantity', $quantity, '>=');
+    $quantity_max_undefined = $query->andConditionGroup()
+      ->condition('min_quantity', $quantity, '<=')
+      ->condition('max_quantity', NULL, 'IS NULL');
+    $quantity_query = $query->orConditionGroup()
+      ->condition($quantity_max_defined)
+      ->condition($quantity_max_undefined);
+    $query->condition($quantity_query);
+
+    $result = $query
       ->execute()
       ->fetchAssoc();
 

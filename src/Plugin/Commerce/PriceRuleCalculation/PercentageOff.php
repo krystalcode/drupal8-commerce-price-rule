@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_price_rule\Plugin\Commerce\PriceRuleCalculation;
 
+use Drupal\commerce\Context;
 use Drupal\commerce_price_rule\Entity\PriceRuleInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -90,7 +91,12 @@ class PercentageOff extends PriceRuleCalculationBase {
   /**
    * {@inheritdoc}
    */
-  public function calculate(EntityInterface $entity, PriceRuleInterface $price_rule) {
+  public function calculate(
+    EntityInterface $entity,
+    PriceRuleInterface $price_rule,
+    $quantity,
+    Context $context
+  ) {
     $this->assertEntity($entity);
     $adjusted_price = $entity->getPrice()->multiply((string) (1 - $this->getAmount()));
     $adjusted_price = $this->rounder->round($adjusted_price);
