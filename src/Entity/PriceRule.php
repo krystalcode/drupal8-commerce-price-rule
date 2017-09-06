@@ -140,6 +140,15 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
   /**
    * {@inheritdoc}
    */
+  public function setCalculation($calculation) {
+    $this->calculation->target_plugin_id = $calculation->getPluginId();
+    $this->calculation->target_plugin_configuration = $calculation->getConfiguration();
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getConditions() {
     $conditions = [];
     foreach ($this->get('conditions') as $field_item) {
@@ -147,6 +156,21 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
       $conditions[] = $field_item->getTargetInstance();
     }
     return $conditions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConditions(array $conditions) {
+    $values = [];
+    foreach ($conditions as $condition) {
+      $values[] = [
+        'target_plugin_id' => $condition->getPluginId(),
+        'target_plugin_configuration' => $condition->getConfiguration(),
+      ];
+    }
+    $this->conditions->setValue($values);
+    return $this;
   }
 
   /**
