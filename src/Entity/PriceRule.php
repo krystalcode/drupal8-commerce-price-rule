@@ -177,8 +177,10 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
    * {@inheritdoc}
    */
   public function getStartDate() {
-    // Can't use the ->date property because it resets the timezone to UTC.
-    return new DrupalDateTime($this->get('start_date')->value);
+    if (!$this->get('start_date')->isEmpty()) {
+      // Can't use the ->date property because it resets the timezone to UTC.
+      return new DrupalDateTime($this->get('start_date')->value);
+    }
   }
 
   /**
@@ -194,6 +196,7 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
    */
   public function getEndDate() {
     if (!$this->get('end_date')->isEmpty()) {
+      // Can't use the ->date property because it resets the timezone to UTC.
       return new DrupalDateTime($this->get('end_date')->value);
     }
   }
@@ -256,7 +259,8 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
 
     // Check start and end dates.
     $time = \Drupal::time()->getRequestTime();
-    if ($this->getStartDate()->format('U') > $time) {
+    $start_date = $this->getStartDate();
+    if ($start_date && $start_date->format('U') > $time) {
       return FALSE;
     }
     $end_date = $this->getEndDate();
@@ -425,9 +429,8 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
     $fields['start_date'] = BaseFieldDefinition::create('datetime')
       ->setLabel(t('Start date'))
       ->setDescription(t('The date the price rule becomes valid.'))
-      ->setRequired(TRUE)
+      ->setRequired(FALSE)
       ->setSetting('datetime_type', 'date')
-      ->setDefaultValueCallback('Drupal\commerce_price_rule\Entity\PriceRule::getDefaultStartDate')
       ->setDisplayOptions('form', [
         'type' => 'datetime_default',
         'weight' => 5,
@@ -439,7 +442,7 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
       ->setRequired(FALSE)
       ->setSetting('datetime_type', 'date')
       ->setDisplayOptions('form', [
-        'type' => 'commerce_end_date',
+        'type' => 'datetime_default',
         'weight' => 6,
       ]);
 
@@ -463,33 +466,6 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
       ->setDefaultValue(0);
 
     return $fields;
-  }
-
-  /**
-   * Default value callback for 'start_date' base field definition.
-   *
-   * @see ::baseFieldDefinitions()
-   *
-   * @return string
-   *   The default value (date string).
-   */
-  public static function getDefaultStartDate() {
-    $timestamp = \Drupal::time()->getRequestTime();
-    return gmdate('Y-m-d', $timestamp);
-  }
-
-  /**
-   * Default value callback for 'end_date' base field definition.
-   *
-   * @see ::baseFieldDefinitions()
-   *
-   * @return int
-   *   The default value (date string).
-   */
-  public static function getDefaultEndDate() {
-    // Today + 1 year.
-    $timestamp = \Drupal::time()->getRequestTime();
-    return gmdate('Y-m-d', $timestamp + 31536000);
   }
 
   /**
