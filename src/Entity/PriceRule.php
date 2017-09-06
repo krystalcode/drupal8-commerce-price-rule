@@ -252,7 +252,7 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
       return FALSE;
     }
 
-    // Store should be one of the allowed once.
+    // Store should be one of the allowed ones.
     if (!in_array($context->getStore()->id(), $this->getStoreIds())) {
       return FALSE;
     }
