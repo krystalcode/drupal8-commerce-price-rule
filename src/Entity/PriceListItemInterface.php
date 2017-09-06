@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_price_rule\Entity;
 
+use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\ContentEntityInterface;
 
 /**

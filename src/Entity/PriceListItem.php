@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_price_rule\Entity;
 
+use Drupal\commerce_price\Price;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -96,7 +97,7 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
    * {@inheritdoc}
    */
   public function getMinimumQuantity() {
-    $this->get('min_quantity')->value;
+    return (string) $this->get('min_quantity')->value;
   }
 
   /**
@@ -111,7 +112,7 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
    * {@inheritdoc}
    */
   public function getMaximumQuantity() {
-    $this->get('max_quantity')->value;
+    return (string) $this->get('max_quantity')->value;
   }
 
   /**
