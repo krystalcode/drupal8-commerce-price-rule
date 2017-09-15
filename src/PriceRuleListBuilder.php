@@ -129,8 +129,11 @@ class PriceRuleListBuilder extends EntityListBuilder implements FormInterface {
     }
     $row['stores'] = implode(', ', $store_names);
 
-    $row['start_date'] = $entity->getStartDate() ? $entity->getStartDate()->format('M jS Y') : '?';
-    $row['end_date'] = $entity->getEndDate() ? $entity->getEndDate()->format('M jS Y') : '—';
+    $start_date = $entity->getStartDate();
+    $row['start_date'] = $start_date ? $start_date->format('M jS Y') : '';
+
+    $end_date = $entity->getEndDate();
+    $row['end_date'] = $end_date ? $end_date->format('M jS Y') : '';
 
     $row['enabled'] = $entity->isEnabled() ? $this->t('Yes') : $this->t('No');
 

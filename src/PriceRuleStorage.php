@@ -84,15 +84,20 @@ class PriceRuleStorage extends CommerceContentEntityStorage implements PriceRule
    */
   public function loadAvailable(StoreInterface $store) {
     $today = gmdate('Y-m-d', $this->time->getRequestTime());
-    $query = $this->getQuery();
-    $or_condition = $query->orConditionGroup()
-      ->condition('end_date', $today, '>=')
-      ->notExists('end_date', $today);
-    $query
+    $query = $this->getQuery()
       ->condition('stores', [$store->id()], 'IN')
-      ->condition('start_date', $today, '<=')
-      ->condition('status', TRUE)
-      ->condition($or_condition);
+      ->condition('status', TRUE);
+
+    // Start and end dates.
+    $start_condition = $query->orConditionGroup()
+      ->condition('start_date', NULL, 'IS NULL')
+      ->condition('start_date', $today, '<=');
+    $end_condition = $query->orConditionGroup()
+      ->condition('end_date', NULL, 'IS NULL')
+      ->condition('end_date', $today, '>=');
+    $query->condition($start_condition)
+      ->condition($end_condition);
+
     $result = $query->execute();
     if (empty($result)) {
       return [];
