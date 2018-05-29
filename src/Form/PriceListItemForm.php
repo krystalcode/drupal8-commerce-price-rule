@@ -115,34 +115,6 @@ class PriceListItemForm extends ContentEntityForm {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
-
-    // There should only be one item per product variation in each list.
-    $price_list_id = $form_state->getValue('price_list_id');
-    $product_variation_id = $form_state->getValue('product_variation_id');
-
-    $result = $this->database_connection
-      ->select('commerce_price_rule_list_item', 'li')
-      ->fields('li', ['price_list_item_id'])
-      ->condition('li.price_list_item_id', $this->entity->id(), '!=')
-      ->condition('li.price_list_id', $price_list_id[0]['target_id'])
-      ->condition('li.product_variation_id', $product_variation_id[0]['target_id'])
-      ->range(0, 1)
-      ->execute()
-      ->fetchAssoc();
-
-    if ($result) {
-      $form_state->setErrorByName(
-        'price_list_id',
-        $this->t('You are adding or moving an item to a price list that already contains a price for this product variation.')
-      );
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function save(array $form, FormStateInterface $form_state) {
     $this->entity->save();
     drupal_set_message(
