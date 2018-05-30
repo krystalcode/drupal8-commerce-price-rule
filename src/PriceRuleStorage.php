@@ -12,6 +12,8 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Drupal\commerce_price_rule\Event\LoadAvailablePriceRulesEvent;
+use Drupal\commerce_price_rule\Event\PriceRuleEvents;
 
 /**
  * Defines the price rule storage.
@@ -97,6 +99,10 @@ class PriceRuleStorage extends CommerceContentEntityStorage implements PriceRule
       ->condition('end_date', $today, '>=');
     $query->condition($start_condition)
       ->condition($end_condition);
+
+    // Allow other modules to modify the query before we execute it.
+    $event = new LoadAvailablePriceRulesEvent($query);
+    $this->eventDispatcher->dispatch(PriceRuleEvents::LOAD_AVAILABLE, $event);
 
     $result = $query->execute();
     if (empty($result)) {
