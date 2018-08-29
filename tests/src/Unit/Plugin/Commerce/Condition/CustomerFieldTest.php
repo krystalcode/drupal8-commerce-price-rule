@@ -38,9 +38,9 @@ class CustomerFieldTest extends UnitTestCase {
     $this->entity_field_manager = $this->prophesize(EntityFieldManagerInterface::class);
     $this->entity_field_manager = $this->entity_field_manager->reveal();
 
-    $this->container = new ContainerBuilder();
-    $this->container->set('entity_field.manager', $this->entity_field_manager);
-    \Drupal::setContainer($this->container);
+    $container = new ContainerBuilder();
+    $container->set('entity_field.manager', $this->entity_field_manager);
+    \Drupal::setContainer($container);
   }
 
   /**

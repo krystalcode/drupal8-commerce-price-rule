@@ -37,9 +37,9 @@ class CustomerPrivateTempStoreTest extends UnitTestCase {
     $tempStoreFactory->get('my_private_store')->willReturn($tempStore);
     $tempStoreFactory = $tempStoreFactory->reveal();
 
-    $this->container = new ContainerBuilder();
-    $this->container->set('user.private_tempstore', $tempStoreFactory);
-    \Drupal::setContainer($this->container);
+    $container = new ContainerBuilder();
+    $container->set('user.private_tempstore', $tempStoreFactory);
+    \Drupal::setContainer($container);
   }
 
   /**
