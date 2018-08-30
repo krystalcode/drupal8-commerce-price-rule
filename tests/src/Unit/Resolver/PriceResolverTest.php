@@ -32,6 +32,8 @@ class PriceResolverTest extends UnitTestCase {
 
   /**
    * @covers ::resolve
+   *
+   * Tests the resolver when the price rule does not apply.
    */
   public function testResolverDoesNotApply() {
     // Setup arguments needed for the context.
@@ -70,6 +72,8 @@ class PriceResolverTest extends UnitTestCase {
 
   /**
    * @covers ::resolve
+   *
+   * Tests the resolver when the price rule is not available.
    */
   public function testResolverNotAvailable() {
     // Setup arguments needed for the context.
@@ -107,6 +111,8 @@ class PriceResolverTest extends UnitTestCase {
 
   /**
    * @covers ::resolve
+   *
+   * Tests the resolver when the price rule applies and is available.
    */
   public function testResolverAppliesAndAvailable() {
     // Setup arguments needed for the context.
