@@ -46,6 +46,7 @@ class PriceResolverTest extends UnitTestCase {
     $price_rule = $this->prophesize(PriceRuleInterface::class);
     $price_rule->available($product_variation, 1, $context, [])
       ->willReturn(TRUE);
+    // Make the price rule not apply.
     $price_rule->applies($product_variation, 1, $context, [])
       ->willReturn(FALSE);
     $price_rule->calculate($product_variation, 1, $context)
@@ -81,8 +82,7 @@ class PriceResolverTest extends UnitTestCase {
     // Setup the needed objects for the price resolver.
     /** @var \Drupal\commerce_price_rule\Entity\PriceRuleInterface $price_rule */
     $price_rule = $this->prophesize(PriceRuleInterface::class);
-    $price_rule->getEntityTypeId()->willReturn('commerce_price_rule');
-    $price_rule->getName()->willReturn('Price Rule 1');
+    // Make the price rule not available.
     $price_rule->available($product_variation, 1, $context, [])
       ->willReturn(FALSE);
     $price_rule->applies($product_variation, 1, $context, [])->willReturn(TRUE);
@@ -119,8 +119,6 @@ class PriceResolverTest extends UnitTestCase {
     // Setup the needed objects for the price resolver.
     /** @var \Drupal\commerce_price_rule\Entity\PriceRuleInterface $price_rule */
     $price_rule = $this->prophesize(PriceRuleInterface::class);
-    $price_rule->getEntityTypeId()->willReturn('commerce_price_rule');
-    $price_rule->getName()->willReturn('Price Rule 1');
     $price_rule->available($product_variation, 1, $context, [])
       ->willReturn(TRUE);
     $price_rule->applies($product_variation, 1, $context, [])->willReturn(TRUE);
@@ -142,29 +140,6 @@ class PriceResolverTest extends UnitTestCase {
     $resolved_price = $price_resolver->resolve($product_variation, 1, $context);
     $this->assertNotNull($resolved_price);
     $this->assertEquals(new Price('10.00', 'USD'), $resolved_price);
-  }
-
-  /**
-   * Returns back a fixed amount price rule calculation.
-   *
-   * @return \Drupal\commerce_price_rule\Plugin\Commerce\PriceRuleCalculation\FixedAmountOff
-   *   The fixed amount object.
-   */
-  protected function getPriceRuleCalculation() {
-    /** @var \Drupal\commerce_price_rule\Plugin\Commerce\PriceRuleCalculation\FixedAmountOff $fixed_amount_off */
-    $configuration = [];
-    $configuration['amount'] = [
-      'number' => '5.00',
-      'currency_code' => 'USD',
-    ];
-    $fixed_amount_off = new FixedAmountOff(
-      $configuration,
-      'fixed_amount_off',
-      ['entity_type' => 'commerce_product_variation'],
-      $this->getRounder()
-    );
-
-    return $fixed_amount_off;
   }
 
   /**
