@@ -35,11 +35,11 @@ class CustomerFieldTest extends UnitTestCase {
   protected function setUp() {
     parent::setUp();
 
-    $this->entity_field_manager = $this->prophesize(EntityFieldManagerInterface::class);
-    $this->entity_field_manager = $this->entity_field_manager->reveal();
+    $this->entityFieldManager = $this->prophesize(EntityFieldManagerInterface::class);
+    $this->entityFieldManager = $this->entityFieldManager->reveal();
 
     $container = new ContainerBuilder();
-    $container->set('entity_field.manager', $this->entity_field_manager);
+    $container->set('entity_field.manager', $this->entityFieldManager);
     \Drupal::setContainer($container);
   }
 
@@ -55,7 +55,7 @@ class CustomerFieldTest extends UnitTestCase {
       $configuration,
       'price_rule_customer_field',
       ['entity_type' => 'user'],
-      $this->entity_field_manager
+      $this->entityFieldManager
     );
 
     /** @var \Drupal\Core\Field\FieldItemList $field */
