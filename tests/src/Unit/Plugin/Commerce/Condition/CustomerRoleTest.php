@@ -37,7 +37,8 @@ class CustomerRoleTest extends UnitTestCase {
     $user = $user->reveal();
 
     $this->assertFalse($condition->evaluate($user));
-    $condition->setConfiguration(['roles' => ['anonymous', 'authenticated']]);
+    $configuration['roles'][] = 'anonymous';
+    $condition->setConfiguration($configuration);
     $this->assertTrue($condition->evaluate($user));
   }
 
@@ -45,6 +46,8 @@ class CustomerRoleTest extends UnitTestCase {
    * @covers ::evaluate
    */
   public function testAuthenticatedCustomer() {
+    $configuration = [];
+    $configuration['roles'] = ['anonymous'];
     $condition = new CustomerRole([
       'roles' => ['anonymous'],
     ], 'price_rule_customer_role', ['entity_type' => 'user']);
@@ -56,7 +59,7 @@ class CustomerRoleTest extends UnitTestCase {
     $user = $user->reveal();
 
     $this->assertFalse($condition->evaluate($user));
-    $configuration['roles'] = ['anonymous', 'authenticated'];
+    $configuration['roles'][] = 'authenticated';
     $condition->setConfiguration($configuration);
     $this->assertTrue($condition->evaluate($user));
   }
