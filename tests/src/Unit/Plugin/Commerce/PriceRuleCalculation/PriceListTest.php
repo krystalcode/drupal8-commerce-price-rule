@@ -30,7 +30,7 @@ use Drupal\user\UserInterface;
  * @group commerce_price_rule
  * @package Drupal\Tests\commerce_price_rule\Unit
  */
-class PriceListTests extends UnitTestCase {
+class PriceListTest extends UnitTestCase {
 
   /**
    * Provides data for testCalculate().
