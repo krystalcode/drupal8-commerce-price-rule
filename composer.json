@@ -1,0 +1,27 @@
+{
+    "name": "drupal/commerce_price_rule",
+    "type": "drupal-module",
+    "description": "Allows store owners to customise product prices based on a variety of conditions.",
+    "keywords": ["Drupal"],
+    "homepage": "https://www.drupal.org/project/commerce_price_rule",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "krystalcode",
+            "homepage": "https://www.drupal.org/u/krystalcode",
+            "role": "Maintainer"
+        },
+        {
+            "name": "shabana.navas",
+            "homepage": "https://www.drupal.org/u/shabananavas",
+            "role": "Co-maintainer"
+        }
+    ],
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/commerce_price_rule",
+        "source": "http://cgit.drupalcode.org/commerce_price_rule"
+    },
+    "require": {
+        "drupal/commerce": "~2.0"
+    }
+}
