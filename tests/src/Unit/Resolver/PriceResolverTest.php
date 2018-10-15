@@ -8,7 +8,6 @@ use Drupal\commerce_price\Price;
 use Drupal\commerce_price\Rounder;
 use Drupal\commerce_price_rule\Entity\PriceRuleInterface;
 use Drupal\commerce_price_rule\Resolver\PriceResolver;
-use Drupal\commerce_price_rule\Plugin\Commerce\PriceRuleCalculation\FixedAmountOff;
 use Drupal\commerce_price_rule\PriceRuleStorageInterface;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\commerce_store\Entity\StoreInterface;
