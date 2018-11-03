@@ -6,6 +6,7 @@ use Drupal\commerce\CommerceContentEntityStorage;
 use Drupal\commerce_store\Entity\StoreInterface;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -40,6 +41,8 @@ class PriceRuleStorage extends CommerceContentEntityStorage implements PriceRule
    *   The cache backend to be used.
    * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
    *   The language manager.
+   * @param \Drupal\Core\Cache\MemoryCache\MemoryCacheInterface $memory_cache
+   *   The memory cache.
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   The event dispatcher.
    * @param \Drupal\Component\Datetime\TimeInterface $time
@@ -51,6 +54,7 @@ class PriceRuleStorage extends CommerceContentEntityStorage implements PriceRule
     EntityManagerInterface $entity_manager,
     CacheBackendInterface $cache,
     LanguageManagerInterface $language_manager,
+    MemoryCacheInterface $memory_cache,
     EventDispatcherInterface $event_dispatcher,
     TimeInterface $time
   ) {
@@ -60,6 +64,7 @@ class PriceRuleStorage extends CommerceContentEntityStorage implements PriceRule
       $entity_manager,
       $cache,
       $language_manager,
+      $memory_cache,
       $event_dispatcher
     );
 
@@ -76,6 +81,7 @@ class PriceRuleStorage extends CommerceContentEntityStorage implements PriceRule
       $container->get('entity.manager'),
       $container->get('cache.entity'),
       $container->get('language_manager'),
+      $container->get('entity.memory_cache'),
       $container->get('event_dispatcher'),
       $container->get('datetime.time')
     );
