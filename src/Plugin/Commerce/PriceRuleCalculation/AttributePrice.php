@@ -117,7 +117,7 @@ class AttributePrice extends PriceRuleCalculationBase {
       }
       $form['price'][$key]['field'] = [
         '#type' => 'select',
-        '#title' => $this->t('Price Field'),
+        '#title' => $key,
         '#options' => $price_fields['commerce_price_fields'],
         '#description' => $this->t('Select the field from which the attribute price needs to be fetched'),
         '#default_value' => $field,
