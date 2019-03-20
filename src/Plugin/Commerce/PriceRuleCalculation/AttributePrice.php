@@ -11,9 +11,16 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\commerce_product\Entity\ProductVariation;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\commerce_product\Entity\ProductAttribute;
+use Drupal\commerce_product\ProductAttributeFieldManagerInterface;
 
 /**
- * Calculation that sets the product price to be based on attribute price.
+ * Calculation that sets the variation price based on attribute prices.
+ *
+ * Provides a config form for setting the attribute price fields which should
+ * be used for calculations. Variation prices are updated by adding
+ * the sum of all used attribute prices.
  *
  * @CommercePriceRuleCalculation(
  *   id = "attribute_price",
@@ -22,13 +29,6 @@ use Drupal\commerce_product\Entity\ProductVariation;
  * )
  */
 class AttributePrice extends PriceRuleCalculationBase {
-
-  /**
-   * The attribute price manager.
-   *
-   * @var \Drupal\commerce_price_rule\AttributePriceCalculationManager
-   */
-  protected $attributePriceManager;
 
   /**
    * Constructs a new PriceList object.
@@ -43,13 +43,19 @@ class AttributePrice extends PriceRuleCalculationBase {
    *   The rounder.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   *   The entity field manager.
+   * @param Drupal\commerce_product\ProductAttributeFieldManagerInterface $attribute_field_manager
+   *   The attribute field manager.
    */
   public function __construct(
     array $configuration,
     $plugin_id,
     $plugin_definition,
     RounderInterface $rounder,
-    EntityTypeManagerInterface $entity_type_manager
+    EntityTypeManagerInterface $entity_type_manager,
+    EntityFieldManagerInterface $entity_field_manager,
+    ProductAttributeFieldManagerInterface $attribute_field_manager
   ) {
     parent::__construct(
       $configuration,
@@ -58,6 +64,8 @@ class AttributePrice extends PriceRuleCalculationBase {
       $rounder
     );
     $this->entityTypeManager = $entity_type_manager;
+    $this->EntityFieldManager = $entity_field_manager;
+    $this->attributeFieldManager = $attribute_field_manager;
   }
 
   /**
@@ -74,7 +82,9 @@ class AttributePrice extends PriceRuleCalculationBase {
       $plugin_id,
       $plugin_definition,
       $container->get('commerce_price.rounder'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('entity_field.manager'),
+      $container->get('commerce_product.attribute_field_manager')
     );
   }
 
@@ -83,7 +93,7 @@ class AttributePrice extends PriceRuleCalculationBase {
    */
   public function defaultConfiguration() {
     return [
-      'amount' => NULL,
+      'attribute_price' => [],
     ] + parent::defaultConfiguration();
   }
 
@@ -92,7 +102,6 @@ class AttributePrice extends PriceRuleCalculationBase {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form += parent::buildConfigurationForm($form, $form_state);
-
     $attributes = $this->getAttributesPriceField();
     $form['price'] = [
       '#type' => 'details',
@@ -106,12 +115,6 @@ class AttributePrice extends PriceRuleCalculationBase {
       if (!empty($this->configuration['attribute_price']['price'][$key]['field'])) {
         $field = $this->configuration['attribute_price']['price'][$key]['field'];
       }
-      $form['price'][$key] = [
-        '#type' => 'details',
-        '#title' => $key,
-        '#collapsible' => TRUE,
-        '#open' => FALSE,
-      ];
       $form['price'][$key]['field'] = [
         '#type' => 'select',
         '#title' => $this->t('Price Field'),
@@ -136,7 +139,7 @@ class AttributePrice extends PriceRuleCalculationBase {
    * {@inheritdoc}
    */
   public function getLabel() {
-    return $this->t('Attribute Based Price');
+    return $this->t('Attribute-based price');
   }
 
   /**
@@ -149,7 +152,10 @@ class AttributePrice extends PriceRuleCalculationBase {
     Context $context
   ) {
     $this->assertEntity($entity);
-    return $this->recalculateVariationPrice($entity, $this->configuration['attribute_price']['price']);
+    $base_price = $entity->get('price')->first()->toPrice();
+    $attribute_price = $this->getAttributeTotalPrice($entity);
+    $price = $base_price->add($attribute_price);
+    return $price;
   }
 
   /**
@@ -161,10 +167,9 @@ class AttributePrice extends PriceRuleCalculationBase {
    */
   public function getAttributesPriceField() {
     $price_fields = [];
-    $attribute_storage = $this->entityTypeManager->getStorage('commerce_product_attribute');
-    $attributes = $attribute_storage->loadMultiple();
+    $attributes = ProductAttribute::loadMultiple();
     foreach ($attributes as $attribute) {
-      $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('commerce_product_attribute_value', $attribute->id());
+      $fields = $this->EntityFieldManager->getFieldDefinitions('commerce_product_attribute_value', $attribute->id());
       foreach ($fields as $field) {
         $type = $field->getType();
         if ($type == "commerce_price") {
@@ -180,16 +185,16 @@ class AttributePrice extends PriceRuleCalculationBase {
    *
    * @param Drupal\commerce_product\Entity\ProductVariation $variation
    *   The commerce product variation.
-   * @param array $attribute_field_map
-   *   The attribute price field mappings.
    *
    * @return Drupal\commerce_price\Price
    *   Sum of all attribute values associated with a variation.
    */
-  public function getAttributeTotalPrice(ProductVariation $variation, array $attribute_field_map) {
+  public function getAttributeTotalPrice(ProductVariation $variation) {
+    $attribute_field_map = $this->configuration['attribute_price']['price'];
     $attribute_total_price = new Price((string) 0, $variation->get('price')->first()->toPrice()->getCurrencyCode());
-    $attribute_storage = $this->entityTypeManager->getStorage('commerce_product_attribute');
-    $attributes = $attribute_storage->loadMultiple();
+    $attribute_map = $this->attributeFieldManager->getFieldMap($variation->bundle());
+    $attributes = array_column($attribute_map, 'attribute_id');
+    $attributes = ProductAttribute::loadMultiple($attributes);
     if (empty($attributes)) {
       return $attribute_total_price;
     }
@@ -204,24 +209,6 @@ class AttributePrice extends PriceRuleCalculationBase {
       }
     }
     return $attribute_total_price;
-  }
-
-  /**
-   * Recalculates the variation price.
-   *
-   * @param Drupal\commerce_product\Entity\ProductVariation $variation
-   *   The commerce product variation.
-   * @param array $attribute_field_map
-   *   The attribute price field mappings.
-   *
-   * @return Drupal\commerce_price\Price
-   *   The recalculated variation price.
-   */
-  public function recalculateVariationPrice(ProductVariation $variation, array $attribute_field_map) {
-    $base_price = $variation->get('price')->first()->toPrice();
-    $attribute_price = $this->getAttributeTotalPrice($variation, $attribute_field_map);
-    $price = $base_price->add($attribute_price);
-    return $price;
   }
 
 }
