@@ -152,7 +152,7 @@ class AttributePrice extends PriceRuleCalculationBase {
     Context $context
   ) {
     $this->assertEntity($entity);
-    $base_price = $entity->get('price')->first()->toPrice();
+    $base_price = $entity->getPrice();
     $attribute_price = $this->getAttributeTotalPrice($entity);
     $price = $base_price->add($attribute_price);
     return $price;
