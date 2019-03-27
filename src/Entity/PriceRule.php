@@ -421,7 +421,8 @@ class PriceRule extends ContentEntityBase implements PriceRuleInterface {
           'entity_types' => [
             'commerce_product',
             'commerce_product_variation',
-            'user'
+            'user',
+            'commerce_price_group_item'
           ],
         ],
       ]);

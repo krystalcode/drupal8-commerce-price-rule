@@ -3,3 +3,9 @@ commerce_price_rule.price_rule_calculation:
   provider: commerce_price_rule
   plugin_manager_service_id: plugin.manager.commerce_price_rule_calculation
   plugin_definition_decorator_class: Drupal\plugin\PluginDefinition\ArrayPluginDefinitionDecorator
+
+commerce_price_rule.price_group_type:
+  label: Commerce price group type
+  provider: commerce_price_rule
+  plugin_manager_service_id: plugin.manager.commerce_price_group_type
+  plugin_definition_decorator_class: Drupal\plugin\PluginDefinition\ArrayPluginDefinitionDecorator

@@ -3,3 +3,9 @@ entity.commerce_price_rule.collection:
   route_name: 'entity.commerce_price_rule.collection'
   parent: 'commerce.admin_commerce'
   description: 'Manage your price rules.'
+
+entity.commerce_price_group_item.collection:
+  title: 'Price group items'
+  route_name: 'entity.commerce_price_group_item.collection'
+  parent: 'commerce.admin_commerce'
+  description: 'Manage your price group items.'
