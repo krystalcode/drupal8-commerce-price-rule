@@ -5,28 +5,28 @@ namespace Drupal\commerce_price_rule\Resolver;
 use Drupal\commerce\Context;
 use Drupal\commerce\PurchasableEntityInterface;
 use Drupal\commerce_price\Resolver\PriceResolverInterface;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
- * Returns the price based on the purchasable entity's price field.
+ * Returns the price based on the available and applicable price rules.
  */
 class PriceResolver implements PriceResolverInterface {
 
   /**
-   * The entity manager.
+   * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entity_manager;
+  protected $entityTypeManager;
 
   /**
    * Constructs a new PriceResolver object.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   The entity manager.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  public function __construct(EntityManagerInterface $entity_manager) {
-    $this->entity_manager = $entity_manager;
+  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -38,7 +38,7 @@ class PriceResolver implements PriceResolverInterface {
     Context $context
   ) {
     // Load all available price rules for the given store.
-    $price_rule_storage = $this->entity_manager->getStorage('commerce_price_rule');
+    $price_rule_storage = $this->entityTypeManager->getStorage('commerce_price_rule');
     $price_rules = $price_rule_storage->loadAvailable($context->getStore());
 
     // Find the first price rule that is available and applicable. Apply it
