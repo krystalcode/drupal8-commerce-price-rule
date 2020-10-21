@@ -3,6 +3,10 @@ services:
     class: Drupal\commerce_price_rule\PriceRuleCalculationManager
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@entity_type.manager']
 
+  plugin.manager.commerce_price_group_type:
+    class: Drupal\commerce_price_rule\PriceGroupTypeManager
+    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@entity_type.manager']
+
   commerce_price_rule.referenceable_plugin_types_subscriber:
     class: Drupal\commerce_price_rule\EventSubscriber\ReferenceablePluginTypesSubscriber
     tags:

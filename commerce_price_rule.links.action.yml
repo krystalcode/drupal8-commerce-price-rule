@@ -4,6 +4,12 @@ entity.commerce_price_rule.add_form:
   appears_on:
     - entity.commerce_price_rule.collection
 
+entity.commerce_price_group_item.add_form:
+  route_name: entity.commerce_price_group_item.add_form
+  title: 'Add a new price group item'
+  appears_on:
+    - entity.commerce_price_group_item.collection
+
 entity.commerce_price_rule_list.add_form:
   route_name: entity.commerce_price_rule_list.add_form
   title: 'Add a new price list'
