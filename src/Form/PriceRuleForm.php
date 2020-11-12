@@ -16,7 +16,7 @@ class PriceRuleForm extends ContentEntityForm {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Skip building the form if there are no available stores.
-    $store_count = $this->entityManager
+    $store_count = $this->entityTypeManager
       ->getStorage('commerce_store')
       ->getQuery()
       ->count()
@@ -91,7 +91,7 @@ class PriceRuleForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $this->entity->save();
-    drupal_set_message($this->t('Saved the %label price rule.', ['%label' => $this->entity->label()]));
+    $this->messenger()->addMessage($this->t('Saved the %label price rule.', ['%label' => $this->entity->label()]));
     $form_state->setRedirect('entity.commerce_price_rule.collection');
   }
 

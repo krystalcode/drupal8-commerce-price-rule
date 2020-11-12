@@ -8,7 +8,7 @@ use Drupal\commerce_price\RounderInterface;
 use Drupal\commerce_price_rule\Entity\PriceRuleInterface;
 use Drupal\Core\Database\Connection as DatabaseConnection;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -26,7 +26,7 @@ class PriceList extends PriceRuleCalculationBase {
   /**
    * The entity manager
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entity_manager;
 
@@ -48,7 +48,7 @@ class PriceList extends PriceRuleCalculationBase {
    *   The plugin implementation definition.
    * @param \Drupal\commerce_price\RounderInterface $rounder
    *   The rounder.
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager
    *   The entity manager.
    * @param \Drupal\Core\Database\Connection $database_connection
    *   The database connection.
@@ -58,7 +58,7 @@ class PriceList extends PriceRuleCalculationBase {
     $plugin_id,
     $plugin_definition,
     RounderInterface $rounder,
-    EntityManagerInterface $entity_manager,
+    EntityTypeManagerInterface $entity_manager,
     DatabaseConnection $database_connection
   ) {
     parent::__construct(
@@ -86,7 +86,7 @@ class PriceList extends PriceRuleCalculationBase {
       $plugin_id,
       $plugin_definition,
       $container->get('commerce_price.rounder'),
-      $container->get('entity.manager'),
+      $container->get('entity_type.manager'),
       $container->get('database')
     );
   }
