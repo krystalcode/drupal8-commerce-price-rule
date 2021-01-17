@@ -5,7 +5,7 @@ namespace Drupal\commerce_price_rule\Form;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Database\Connection as DatabaseConnection;
 use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -33,8 +33,8 @@ class PriceListItemForm extends ContentEntityForm {
   /**
    * Constructs a PriceListItemForm object.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   The entity manager.
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
+   *   The entity repository service.
    * @param \Drupal\Core\Database\Connection $database_connection
    *   The database connection.
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
@@ -45,14 +45,14 @@ class PriceListItemForm extends ContentEntityForm {
    *   The time service.
    */
   public function __construct(
-    EntityManagerInterface $entity_manager,
+    EntityRepositoryInterface $entity_repository,
     DatabaseConnection $database_connection,
     RouteMatchInterface $route_match,
     EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL,
     TimeInterface $time = NULL
   ) {
     parent::__construct(
-      $entity_manager,
+      $entity_repository,
       $entity_type_bundle_info,
       $time
     );
@@ -66,7 +66,7 @@ class PriceListItemForm extends ContentEntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager'),
+      $container->get('entity.repository'),
       $container->get('database'),
       $container->get('current_route_match'),
       $container->get('entity_type.bundle.info'),
@@ -104,7 +104,7 @@ class PriceListItemForm extends ContentEntityForm {
       return $form;
     }
 
-    $price_list = $this->entityManager
+    $price_list = $this->entityTypeManager
       ->getStorage('commerce_price_rule_list')
       ->load($price_list_id);
     $form['advanced']['price_list_id']['widget'][0]['target_id']['#default_value'] = $price_list;
@@ -117,7 +117,7 @@ class PriceListItemForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $this->entity->save();
-    drupal_set_message(
+    $this->messenger()->addMessage(
       $this->t(
         'Saved the %label price list item.',
         ['%label' => $this->entity->label()]

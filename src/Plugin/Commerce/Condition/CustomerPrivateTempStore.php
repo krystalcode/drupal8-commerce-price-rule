@@ -44,7 +44,7 @@ class CustomerPrivateTempStore extends ConditionBase {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     // @todo Figure out why proper dependency injection does not work
-    $this->privateTempStore = \Drupal::service('user.private_tempstore');
+    $this->privateTempStore = \Drupal::service('tempstore.private');
   }
 
   /**

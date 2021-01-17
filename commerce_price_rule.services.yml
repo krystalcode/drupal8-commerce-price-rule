@@ -10,6 +10,6 @@ services:
 
   commerce_price_rule.price_resolver:
     class: Drupal\commerce_price_rule\Resolver\PriceResolver
-    arguments: ['@entity.manager']
+    arguments: ['@entity_type.manager']
     tags:
       - { name: commerce_price.price_resolver, priority: 0 }

@@ -15,7 +15,7 @@ class PriceListForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $this->entity->save();
-    drupal_set_message(
+    $this->messenger()->addMessage(
       $this->t(
         'Saved the %label price list.',
         ['%label' => $this->entity->label()]
