@@ -28,7 +28,7 @@ class PriceList extends PriceRuleCalculationBase {
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entity_manager;
+  protected $entity_type_manager;
 
   /**
    * The database connection.
@@ -48,7 +48,7 @@ class PriceList extends PriceRuleCalculationBase {
    *   The plugin implementation definition.
    * @param \Drupal\commerce_price\RounderInterface $rounder
    *   The rounder.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity manager.
    * @param \Drupal\Core\Database\Connection $database_connection
    *   The database connection.
@@ -58,7 +58,7 @@ class PriceList extends PriceRuleCalculationBase {
     $plugin_id,
     $plugin_definition,
     RounderInterface $rounder,
-    EntityTypeManagerInterface $entity_manager,
+    EntityTypeManagerInterface $entity_type_manager,
     DatabaseConnection $database_connection
   ) {
     parent::__construct(
@@ -68,7 +68,7 @@ class PriceList extends PriceRuleCalculationBase {
       $rounder
     );
 
-    $this->entity_manager = $entity_manager;
+    $this->entity_type_manager = $entity_type_manager;
     $this->database_connection = $database_connection;
   }
 
@@ -108,7 +108,7 @@ class PriceList extends PriceRuleCalculationBase {
 
     $price_list = $this->configuration['price_list_id'];
     if ($price_list) {
-      $price_list = $this->entity_manager
+      $price_list = $this->entity_type_manager
         ->getStorage('commerce_price_rule_list')
         ->load($price_list);
     }
@@ -146,7 +146,7 @@ class PriceList extends PriceRuleCalculationBase {
       return;
     }
 
-    return $this->entity_manager
+    return $this->entity_type_manager
       ->getStorage('commerce_price_rule_list')
       ->load($this->configuration['price_list_id']);
   }
