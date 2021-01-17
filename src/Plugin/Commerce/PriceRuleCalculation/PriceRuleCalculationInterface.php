@@ -5,6 +5,7 @@ namespace Drupal\commerce_price_rule\Plugin\Commerce\PriceRuleCalculation;
 use Drupal\commerce\Context;
 use Drupal\commerce_price_rule\Entity\PriceRuleInterface;
 use Drupal\Component\Plugin\ConfigurableInterface;
+use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
@@ -12,7 +13,7 @@ use Drupal\Core\Plugin\PluginFormInterface;
 /**
  * Defines the interface for price rule calculations.
  */
-interface PriceRuleCalculationInterface extends ConfigurableInterface, PluginFormInterface, PluginInspectionInterface {
+interface PriceRuleCalculationInterface extends ConfigurableInterface, DependentPluginInterface, PluginFormInterface, PluginInspectionInterface {
 
   /**
    * Gets the calculation entity type ID.
